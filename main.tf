@@ -294,6 +294,7 @@ resource "null_resource" "update_kubeconfig" {
 resource "null_resource" "example" {
   provisioner "local-exec" {
     command = <<-EOF
+    kubectl apply -f ./app/rbac.yaml
     kubectl apply -f ./app/helloworld.yaml
     kubectl get node
     kubectl get pod

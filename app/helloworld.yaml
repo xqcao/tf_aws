@@ -17,16 +17,51 @@ spec:
         image: nginx:latest
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "1"
+          requests:
+            memory: 256Mi
+            cpu: "0.2"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: example-svc
   namespace: default
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
 spec:
   selector:
     app: example-app
-  type: ClusterIP
+  # type: ClusterIP
+  type: LoadBalancer
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+  - name: example-svc
+    protocol: TCP
+    port: 8080
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-svc
+  namespace: default
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+spec:
+  selector:
+    app: example-app
+  # type: ClusterIP
+  type: LoadBalancer
   sessionAffinity: None
   sessionAffinityConfig:
     clientIP:
@@ -38,4 +73,4 @@ spec:
     targetPort: 80
     # If you set the `spec.type` field to `NodePort` and you want a specific port number,
     # you can specify a value in the `spec.ports[*].nodePort` field.
-    nodePort: 30001
+    # nodePort: 30001
