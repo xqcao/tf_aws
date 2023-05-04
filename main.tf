@@ -293,8 +293,13 @@ resource "null_resource" "update_kubeconfig" {
 
 resource "null_resource" "example" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ./app/helloworld.yaml"
-
+    command = <<-EOF
+    kubectl apply -f ./app/helloworld.yaml
+    kubectl get node
+    kubectl get pod
+    kubectl get svc
+    culr -I ${aws_eip.nat1.public_ip}:30001
+    EOF
   }
 
   triggers = {
