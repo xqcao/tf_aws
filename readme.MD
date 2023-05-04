@@ -29,3 +29,7 @@
 # deploy app/helloworld.yml
 
 # testing
+
+
+# terraform validate
+# Success! The configuration is valid.
